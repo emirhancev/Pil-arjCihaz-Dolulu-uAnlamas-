@@ -1,0 +1,1 @@
+# Pil-arjCihaz-Dolulu-uAnlamas-
