@@ -1,1 +1,1 @@
-# Pil-arjCihaz-Dolulu-uAnlamas-
+# PilsarjCihaziDolulukOranTespiti
