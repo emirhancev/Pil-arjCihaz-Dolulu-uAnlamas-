@@ -1,0 +1,60 @@
+FUNCTION_BLOCK BatteryChargerModel
+
+VAR_INPUT
+	PilSicaklik:REAL;
+	PilVoltaj:REAL;
+END_VAR
+
+VAR_OUTPUT
+	DolulukOran:REAL;
+END_VAR
+
+FUZZIFY PilSicaklik
+	TERM CokSoguk := (-20,1)(0,0);
+	TERM Soguk := trian -20 0 16;
+	TERM Normal:= trape 0 16 25 35;
+	TERM Sicak := trian 25 35 45;
+	TERM CokSicak := (35,0)(45,1);
+END_FUZZIFY
+
+FUZZIFY PilVoltaj
+	TERM Dusuk := (3.30,1)(3.60,0);
+	TERM Orta := trian 3.30 3.60 3.70;
+	TERM Yuksek := (3.60,0)(3.70,1)(4.20,1);
+END_FUZZIFY
+
+DEFUZZIFY DolulukOran
+	TERM CokAz:=(-10,1)(20,0);
+	TERM Az:=trian -10 25 40;
+	TERM Normal :=trian 20 40 55;
+	TERM Fazla:=trian 40 55 70;
+	TERM CokFazla:=(55,0)(70,1)(137,1);
+	METHOD:COG;
+	DEFAULT:=0;
+END_DEFUZZIFY
+
+RULEBLOCK kuralblok
+	AND:MIN;
+	ACT:MIN;
+	ACCU:MAX;
+	
+	RULE 1:IF PilSicaklik IS CokSoguk AND PilVoltaj IS Dusuk THEN DolulukOran IS CokAz;
+	RULE 2:IF PilSicaklik IS CokSoguk AND PilVoltaj IS Orta THEN DolulukOran IS Az;
+	RULE 3:IF PilSicaklik IS CokSoguk AND PilVoltaj IS Yuksek THEN DolulukOran IS Normal;
+	RULE 4:IF PilSicaklik IS Soguk AND PilVoltaj IS Dusuk THEN DolulukOran IS Az;
+	RULE 5:IF PilSicaklik IS Soguk AND PilVoltaj IS Orta THEN DolulukOran IS Normal;
+	RULE 6:IF PilSicaklik IS Soguk AND PilVoltaj IS Yuksek THEN DolulukOran IS Fazla;
+	RULE 7:IF PilSicaklik IS Normal AND PilVoltaj IS Dusuk THEN DolulukOran IS Normal;
+	RULE 8:IF PilSicaklik IS Normal AND PilVoltaj IS Orta THEN DolulukOran IS Fazla;
+	RULE 9:IF PilSicaklik IS Normal AND PilVoltaj IS Yuksek THEN DolulukOran IS CokFazla;
+	RULE 10:IF PilSicaklik IS Sicak AND PilVoltaj IS Dusuk THEN DolulukOran IS Az;
+	RULE 11:IF PilSicaklik IS Sicak AND PilVoltaj IS Orta THEN DolulukOran IS Normal;
+	RULE 12:IF PilSicaklik IS Sicak AND PilVoltaj IS Yuksek THEN DolulukOran IS Fazla;
+	RULE 13:IF PilSicaklik IS CokSicak AND PilVoltaj IS Dusuk THEN DolulukOran IS CokAz;
+	RULE 14:IF PilSicaklik IS CokSicak AND PilVoltaj IS Orta THEN DolulukOran IS Az;
+	RULE 15:IF PilSicaklik IS CokSicak AND PilVoltaj IS Yuksek THEN DolulukOran IS Normal;
+	
+END_RULEBLOCK
+
+
+END_FUNCTION_BLOCK
